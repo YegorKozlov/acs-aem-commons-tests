@@ -1,0 +1,151 @@
+{
+  "jcr:primaryType": "cq:Template",
+  "allowedPaths": ["/content/entities(/.*)?"],
+  "ranking": 100,
+  "jcr:content": {
+    "jcr:primaryType": "cq:PageContent",
+    "jcr:title": "ACS CF Importer Test Model",
+    "status": "enabled",
+    "sling:resourceSuperType": "dam/cfm/models/console/components/data/entity",
+    "jcr:description": "Test Import From Excel Spreadsheets using ACS Commons",
+    "cq:scaffolding": "/conf/global/settings/dam/cfm/models/importable1/jcr:content/model",
+    "cq:templateType": "/libs/settings/dam/cfm/model-types/fragment",
+    "sling:resourceType": "dam/cfm/models/console/components/data/entity/default",
+    "metadata": {"jcr:primaryType": "nt:unstructured"},
+    "model": {
+      "jcr:primaryType": "cq:PageContent",
+      "dataTypesConfig": "/mnt/overlay/settings/dam/cfm/models/formbuilderconfig/datatypes",
+      "sling:resourceType": "wcm/scaffolding/components/scaffolding",
+      "maxGeneratedOrder": "20",
+      "cq:targetPath": "/content/entities",
+      "cq:dialog": {
+        "jcr:primaryType": "nt:unstructured",
+        "sling:resourceType": "cq/gui/components/authoring/dialog",
+        "content": {
+          "jcr:primaryType": "nt:unstructured",
+          "sling:resourceType": "granite/ui/components/coral/foundation/fixedcolumns",
+          "items": {
+            "jcr:primaryType": "nt:unstructured",
+            "maxGeneratedOrder": "20",
+            "1646132417128": {
+              "jcr:primaryType": "nt:unstructured",
+              "listOrder": "1",
+              "valueType": "string",
+              "showEmptyInReadOnly": "true",
+              "metaType": "text-single",
+              "name": "singleLine",
+              "maxlength": "255",
+              "fieldLabel": "Single Line",
+              "sling:resourceType": "granite/ui/components/coral/foundation/form/textfield",
+              "renderReadOnly": "false",
+              "granite:data": {"jcr:primaryType": "nt:unstructured"}
+              },
+            "1646132437819": {
+              "jcr:primaryType": "nt:unstructured",
+              "listOrder": "1",
+              "valueType": "string[]",
+              "showEmptyInReadOnly": "true",
+              "metaType": "text-single",
+              "name": "stringMultifield",
+              "maxlength": "255",
+              "fieldLabel": "String Multifield",
+              "sling:resourceType": "granite/ui/components/coral/foundation/form/multifield",
+              "renderReadOnly": "false",
+              "field": {
+                "jcr:primaryType": "nt:unstructured",
+                "name": "stringMultifield",
+                "maxlength": "255",
+                "sling:resourceType": "granite/ui/components/coral/foundation/form/textfield",
+                "renderReadOnly": "false",
+                "granite:data": {"jcr:primaryType": "nt:unstructured"}
+                },
+              "granite:data": {"jcr:primaryType": "nt:unstructured"}
+              },
+            "1646132535266": {
+              "jcr:primaryType": "nt:unstructured",
+              "listOrder": "2",
+              "valueType": "string/multiline",
+              "showEmptyInReadOnly": "true",
+              "metaType": "text-multi",
+              "cfm-element": "Multi Line",
+              "name": "multiLine",
+              "checked": "false",
+              "sling:resourceType": "dam/cfm/admin/components/authoring/contenteditor/multieditor",
+              "renderReadOnly": "false",
+              "default-mime-type": "text/html"
+              },
+            "1646132498691": {
+              "jcr:primaryType": "nt:unstructured",
+              "listOrder": "3",
+              "valueType": "double",
+              "showEmptyInReadOnly": "true",
+              "metaType": "number",
+              "name": "numberField",
+              "step": "any",
+              "fieldLabel": "Number Field",
+              "sling:resourceType": "granite/ui/components/coral/foundation/form/numberfield",
+              "renderReadOnly": "false",
+              "granite:data": {"jcr:primaryType": "nt:unstructured"}
+              },
+            "1646132553767": {
+              "jcr:primaryType": "nt:unstructured",
+              "listOrder": "4",
+              "valueType": "boolean",
+              "showEmptyInReadOnly": "true",
+              "metaType": "boolean",
+              "name": "boolean",
+              "text": "Boolean",
+              "sling:resourceType": "granite/ui/components/coral/foundation/form/checkbox",
+              "renderReadOnly": "false",
+              "granite:data": {"jcr:primaryType": "nt:unstructured"}
+              },
+            "1646149886154": {
+              "jcr:primaryType": "nt:unstructured",
+              "valueFormat": "YYYY-MM-DD[T]HH:mm:ss.000Z",
+              "emptyText": [
+                "YYYY-MM-DD HH:mm",
+                "YYYY-MM-DD HH:mm"
+              ],
+              "listOrder": "5",
+              "valueType": "calendar/datetime",
+              "displayedFormat": "YYYY-MM-DD HH:mm",
+              "showEmptyInReadOnly": "true",
+              "metaType": "date",
+              "name": "dateTime",
+              "type": "datetime",
+              "fieldLabel": "Date Time",
+              "sling:resourceType": "dam/cfm/models/editor/components/datatypes/datepicker",
+              "renderReadOnly": "false",
+              "granite:data": {
+                "jcr:primaryType": "nt:unstructured",
+                "typeHint": "Date"
+                }
+              },
+            "1646149913837": {
+              "jcr:primaryType": "nt:unstructured",
+              "valueFormat": "YYYY-MM-DD",
+              "emptyText": [
+                "YYYY-MM-DD",
+                "YYYY-MM-DD"
+              ],
+              "listOrder": "5",
+              "valueType": "calendar/date",
+              "displayedFormat": "YYYY-MM-DD",
+              "showEmptyInReadOnly": "true",
+              "metaType": "date",
+              "name": "date",
+              "type": "date",
+              "fieldLabel": "Date",
+              "sling:resourceType": "dam/cfm/models/editor/components/datatypes/datepicker",
+              "renderReadOnly": "false",
+              "granite:data": {
+                "jcr:primaryType": "nt:unstructured",
+                "typeHint": "Date"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
