@@ -14,13 +14,16 @@ import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.TimeZone;
 
 import static com.adobe.acs.commons.it.redirects.testing.asserts.RedirectAssert.assertNoRedirect;
 import static com.adobe.acs.commons.it.redirects.testing.asserts.RedirectAssert.assertRedirect;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class RedirectTestCaseIT {
     @ClassRule
@@ -166,7 +169,7 @@ public class RedirectTestCaseIT {
         );
 
         SlingHttpResponse response = adminAuthor.doRawRequest("POST", contentRoot + "/en/one",
-                Collections.singletonList(new BasicHeader("Cookie", "wcmmode=disabled")), 404, 500);
+                Collections.singletonList(new BasicHeader("Cookie", "wcmmode=disabled")), 404, 409, 500);
         Header locationHeader = response.getFirstHeader("Location");
         assertNull("location header not found", locationHeader);
 

@@ -8,6 +8,8 @@ import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +26,9 @@ public class ContentFragmentImportIT {
     public static TestContentFragmentRule cfRule = new TestContentFragmentRule(cqBaseClassRule.authorRule);
 
     static CQClient cqClient;
+
+
+    private static final DateTimeFormatter jsonDateTime = DateTimeFormatter.ofPattern("EEE MMM dd yyyy HH:mm:ss 'GMT'Z");
 
     @BeforeClass
     public static void beforeClass() {
@@ -42,8 +47,15 @@ public class ContentFragmentImportIT {
 
             JsonNode props = cqClient.doGetJson(path + "/jcr:content/data/master", 1);
             assertEquals(path, true, props.get("boolean").asBoolean());
-            assertEquals(path, "Sat Feb 16 1974 00:00:00 GMT+0000", props.get("date") == null ? null : props.get("date").asText());
-            assertEquals(path, "Sat Feb 16 1974 13:36:00 GMT+0000", props.get("dateTime") == null ? null : props.get("dateTime").asText());
+
+            ZonedDateTime expectedDate = ZonedDateTime.parse("Sat Feb 16 1974 00:00:00 GMT+0000", jsonDateTime);
+            ZonedDateTime actualDate = props.get("date") == null ? null : ZonedDateTime.parse(props.get("date").asText(), jsonDateTime);
+            assertEquals(path, expectedDate, actualDate);
+
+            ZonedDateTime expectedDateTime = ZonedDateTime.parse("Sat Feb 16 1974 13:36:00 GMT+0000", jsonDateTime);
+            ZonedDateTime actualDateTime = props.get("dateTime") == null ? null : ZonedDateTime.parse(props.get("dateTime").asText(), jsonDateTime);
+            assertEquals(path, expectedDateTime, actualDateTime);
+
             assertEquals(path, "<p>Hello, World!</p>", props.get("multiLine").asText());
             assertEquals(path, "single line", props.get("singleLine").asText());
             assertEquals(path, 1974, props.get("numberField").asInt());
