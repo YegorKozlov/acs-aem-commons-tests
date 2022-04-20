@@ -8,10 +8,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.sling.testing.clients.ClientException;
 import org.apache.sling.testing.clients.util.FormEntityBuilder;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Test;
+import org.junit.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +67,13 @@ public class NodeNameSorterIT {
         log.info("nodes to sort: {}", nodeNames);
     }
 
+
+    @After
+    public void after() throws ClientException {
+        log.info("deleting " + contentRoot);
+        cqClient.deletePath(contentRoot);
+    }
+
     private void createPage(String name, String title) throws ClientException{
         String pagePath = contentRoot + "/" + name;
         log.info(pagePath);
@@ -78,11 +82,6 @@ public class NodeNameSorterIT {
         if(title != null) {
             cqClient.setPageProperty(pagePath, "jcr:title", title);
         }
-    }
-
-    @Before
-    public void after() throws ClientException {
-        cqClient.deletePath(contentRoot);
     }
 
     /**

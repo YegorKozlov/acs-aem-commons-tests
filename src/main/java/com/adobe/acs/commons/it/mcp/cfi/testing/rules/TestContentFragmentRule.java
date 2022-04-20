@@ -91,6 +91,7 @@ public class TestContentFragmentRule extends ExternalResource {
     protected void before() throws ClientException, IOException {
         client = this.quickstartRule.getAdminClient(CQClient.class);
 
+
         String rnd = RandomStringUtils.randomAlphabetic(8);
         confParentPath = "/conf/" + rnd;
         cfDamPath = "/content/dam/" + rnd;
@@ -137,6 +138,7 @@ public class TestContentFragmentRule extends ExternalResource {
                 }
             }
             tmp = File.createTempFile("cf-import", "xlsx");
+            logger.info("{}", tmp);
             FileOutputStream out = new FileOutputStream(tmp);
             wb.write(out);
         }
