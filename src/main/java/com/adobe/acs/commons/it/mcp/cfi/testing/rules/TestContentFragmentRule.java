@@ -49,6 +49,33 @@ public class TestContentFragmentRule extends ExternalResource {
     }
 
 
+    @Override
+    protected void before() throws ClientException, IOException {
+        client = this.quickstartRule.getAdminClient(CQClient.class);
+
+
+        String rnd = RandomStringUtils.randomAlphabetic(8);
+        confParentPath = "/conf/" + rnd;
+        cfDamPath = "/content/dam/" + rnd;
+        createConf(confParentPath);
+        createCFModel(confParentPath);
+        createDamRoot(cfDamPath);
+    }
+
+    @Override
+    protected void after() {
+        try {
+            logger.info("deleting {}", confParentPath);
+            client.deletePath(confParentPath);
+
+            logger.info("deleting {}", cfDamPath);
+            client.deletePath(cfDamPath);
+        } catch (ClientException e) {
+            logger.error("Could not delete sling mappings", e);
+        }
+        tmp.delete();
+    }
+
     void createCFModel(String parentPath) throws ClientException, IOException {
         HttpEntity entity = FormEntityBuilder.create()
                 .addParameter(":operation", "cfm:createModel")
@@ -85,33 +112,6 @@ public class TestContentFragmentRule extends ExternalResource {
         client.createNode(path, "sling:Folder");
         client.createNode(path + "/jcr:content", "nt:unstructured");
         logger.info("created {}", path);
-    }
-
-    @Override
-    protected void before() throws ClientException, IOException {
-        client = this.quickstartRule.getAdminClient(CQClient.class);
-
-
-        String rnd = RandomStringUtils.randomAlphabetic(8);
-        confParentPath = "/conf/" + rnd;
-        cfDamPath = "/content/dam/" + rnd;
-        createConf(confParentPath);
-        createCFModel(confParentPath);
-        createDamRoot(cfDamPath);
-    }
-
-    @Override
-    protected void after() {
-        try {
-            logger.info("deleting {}", confParentPath);
-            client.deletePath(confParentPath);
-
-            logger.info("deleting {}", cfDamPath);
-            client.deletePath(cfDamPath);
-        } catch (ClientException e) {
-            logger.error("Could not delete sling mappings", e);
-        }
-        tmp.delete();
     }
 
     void prepareImportData(String resourcePath) throws IOException {
