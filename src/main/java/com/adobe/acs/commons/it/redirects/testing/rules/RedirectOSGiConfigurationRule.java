@@ -38,22 +38,13 @@ public class RedirectOSGiConfigurationRule extends ExternalResource {
         this.configs = new InstanceConfigCacheImpl();
         this.configs.add(new OsgiInstanceConfig(this.client, this.pid));
 
-        try {
-            client.waitEditConfiguration(10000,
-                    pid, null,
-                    ImmutableMap.of(
-                            "enabled", "true",
-                            "mapUrls", "true",
-                            "preserveQueryString", "true",
-                            "paths", "/content"
-                    ));
-            ;
-            Map<String, Object> config = this.client.waitGetConfiguration(30000, this.pid, SC_OK);
-            assertEquals(config.get("enabled"), "true");
-        } catch (TimeoutException e) {
-            throw new ClientException("Failed editing configuration for " + this.pid, e);
-        }
-
+        update(ImmutableMap.of(
+                "enabled", "true",
+                "mapUrls", "true",
+                "preserveQueryString", "true",
+                "evaluateSelectors", "false",
+                "paths", "/content"
+        ));
     }
 
     /**
@@ -66,5 +57,28 @@ public class RedirectOSGiConfigurationRule extends ExternalResource {
         } catch (InstanceConfigException | InterruptedException e) {
             logger.error("Could not restore OSGi config.", e);
         }
+    }
+    public void update(Map<String, Object> configProperties) throws ClientException, InterruptedException{
+        try {
+            client.waitEditConfiguration(10000,
+                    pid, null,
+                    configProperties);
+            ;
+            Map<String, Object> config = this.client.waitGetConfiguration(30000, this.pid, SC_OK);
+            assertEquals(config.get("enabled"), "true");
+        } catch (TimeoutException e) {
+            throw new ClientException("Failed editing configuration for " + this.pid, e);
+        }
+
+    }
+
+    public void evaluateSelectors(boolean flag) throws ClientException, InterruptedException{
+        update(ImmutableMap.of(
+                "enabled", "true",
+                "mapUrls", "true",
+                "preserveQueryString", "true",
+                "evaluateSelectors", flag,
+                "paths", "/content"
+        ));
     }
 }

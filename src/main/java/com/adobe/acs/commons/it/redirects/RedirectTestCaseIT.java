@@ -22,8 +22,8 @@ import java.util.TimeZone;
 
 import static com.adobe.acs.commons.it.redirects.testing.asserts.RedirectAssert.assertNoRedirect;
 import static com.adobe.acs.commons.it.redirects.testing.asserts.RedirectAssert.assertRedirect;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class RedirectTestCaseIT {
     @ClassRule
@@ -150,7 +150,7 @@ public class RedirectTestCaseIT {
                 contentRoot + "/en/one", contentRoot + "/en/two", 302
         );
 
-        assertRedirect(adminAuthor, contentRoot + "/en/one.json", contentRoot + "/en/two.json", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/en/one.json");
     }
 
     @Test
@@ -296,4 +296,46 @@ public class RedirectTestCaseIT {
         assertRedirect(adminAuthor, damRoot + "/asset1.txt", damRoot + "/asset1global.txt", 302);
     }
 
+
+    @Test
+    public void testMatchSelectors() throws Exception {
+        osgiConfigRule.evaluateSelectors(true);
+
+        redirectConfigurationRule.withRules(confRoot,
+                contentRoot + "/page1.mobile", contentRoot + "/page1target", 302
+        );
+        assertRedirect(adminAuthor, contentRoot + "/page1.mobile.html", contentRoot + "/page1target.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page1.html");
+        assertNoRedirect(adminAuthor, contentRoot + "/page1.desktop.html");
+
+    }
+
+    @Test
+    public void testMatchSelectorsRegex() throws Exception {
+        osgiConfigRule.evaluateSelectors(true);
+
+        redirectConfigurationRule.withRules(confRoot,
+                contentRoot + "/page1\\.(mobile|desktop)", contentRoot + "/page1target", 302
+        );
+        assertRedirect(adminAuthor, contentRoot + "/page1.mobile.html", contentRoot + "/page1target.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page1.desktop.html", contentRoot + "/page1target.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page1.unknowqn.html");
+        assertNoRedirect(adminAuthor, contentRoot + "/page1.html");
+    }
+
+
+    @Test
+    public void testSelectorsDisabled() throws Exception {
+        osgiConfigRule.evaluateSelectors(false);
+
+        redirectConfigurationRule.withRules(confRoot,
+                contentRoot + "/page1", contentRoot + "/page1target", 302,
+                contentRoot + "/page1.desktop", contentRoot + "/page1target", 302,
+                contentRoot + "/page1.mobile", contentRoot + "/page1target", 302
+                );
+        assertRedirect(adminAuthor, contentRoot + "/page1.mobile.html", contentRoot + "/page1target.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page1.html", contentRoot + "/page1target.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page1.desktop.html", contentRoot + "/page1target.html", 302);
+
+    }
 }
