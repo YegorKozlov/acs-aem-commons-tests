@@ -88,6 +88,10 @@ public class RedirectConfigurationRule extends ExternalResource {
         if (!path.startsWith("/content/")) {
             throw new IllegalArgumentException("content root must start with /content, was: " + path);
         }
+        createPage(path);
+    }
+
+    public void createPage(String path) throws ClientException {
         sling.createNode(path, "cq:Page");
         sling.createNode(path + "/jcr:content", "cq:PageContent");
         log.info("created {}", path);

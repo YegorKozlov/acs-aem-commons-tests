@@ -338,4 +338,160 @@ public class RedirectTestCaseIT {
         assertRedirect(adminAuthor, contentRoot + "/page1.desktop.html", contentRoot + "/page1target.html", 302);
 
     }
+
+    /**
+     * Simple (non-regex) rules
+     *
+     * see the rationale in https://github.com/Adobe-Consulting-Services/acs-aem-commons/pull/2981#pullrequestreview-1169369915
+     */
+    @Test
+    public void testEvaluateRequestURI() throws Exception {
+        redirectConfigurationRule.createPage(contentRoot + "/page1");
+        redirectConfigurationRule.createPage(contentRoot + "/page2");
+        redirectConfigurationRule.createPage(contentRoot + "/page3");
+
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple1.html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple2.html/suffix.html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple3.mobile.html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page1.html/suffix.html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page2.html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page3.mobile.html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+
+        assertRedirect(adminAuthor, contentRoot + "/simple1.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/simple1.html?a=b&c=d", contentRoot + "/en/ok.html?a=b&c=d", 302);
+
+        assertRedirect(adminAuthor, contentRoot + "/simple2.html/suffix.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/simple2.html/unknown.html"); // suffix does not match
+
+        assertRedirect(adminAuthor, contentRoot + "/simple3.mobile.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/simple3.desktop.html"); // selector does not match
+
+        assertRedirect(adminAuthor, contentRoot + "/page1.html/suffix.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page1.html/unknown.html"); // suffix does not match
+
+        assertRedirect(adminAuthor, contentRoot + "/page2.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page2.html?a=b&c=d", contentRoot + "/en/ok.html?a=b&c=d", 302);
+
+        assertRedirect(adminAuthor, contentRoot + "/page3.mobile.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page3.desktop.html"); // selector does not match
+
+    }
+
+    @Test
+    public void testEvaluateRequestURIRegex() throws Exception {
+        redirectConfigurationRule.createPage(contentRoot + "/page1");
+        redirectConfigurationRule.createPage(contentRoot + "/page2");
+        redirectConfigurationRule.createPage(contentRoot + "/page3");
+
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple1-(\\d).html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple2.html/suffix-(\\d).html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/simple3.(mobile|desktop).html", // redirect on a non-existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page1-(\\d).html/suffix-(\\d).html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page(\\d+).html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page3.(mobile|desktop).html",  // redirect on an existing resource
+                "target", contentRoot + "/en/ok",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+
+
+        assertRedirect(adminAuthor, contentRoot + "/simple1-1.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/simple1-2.html?a=b&c=d", contentRoot + "/en/ok.html?a=b&c=d", 302);
+
+        assertRedirect(adminAuthor, contentRoot + "/simple2.html/suffix-1.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/simple2.html/suffix-2.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/simple2.html/unknown.html"); // suffix does not match
+
+        assertRedirect(adminAuthor, contentRoot + "/simple3.mobile.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/simple3.desktop.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/simple3.unknown.html"); // selector does not match
+
+        assertRedirect(adminAuthor, contentRoot + "/page1-1.html/suffix-1.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page1-1.html/unknown.html"); // suffix does not match
+        assertNoRedirect(adminAuthor, contentRoot + "/page1-abc.html/suffix-1.html"); // resource name not match
+
+        assertRedirect(adminAuthor, contentRoot + "/page2.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page22.html?a=b&c=d", contentRoot + "/en/ok.html?a=b&c=d", 302);
+
+        assertRedirect(adminAuthor, contentRoot + "/page3.mobile.html", contentRoot + "/en/ok.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page3.desktop.html", contentRoot + "/en/ok.html", 302);
+        assertNoRedirect(adminAuthor, contentRoot + "/page3.unknown.html"); // selector does not match
+    }
+
+    @Test
+    public void testEvaluateRequestURICaptureSelectors() throws Exception {
+        redirectConfigurationRule.createPage(contentRoot + "/page1");
+
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/en/page.mobile.html",
+                "target", contentRoot + "/en/page.desktop.html",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+        redirectConfigurationRule.createRule(confRoot, ImmutableMap.of(
+                "source", contentRoot + "/page1.mobile.html",
+                "target", contentRoot + "/page1.desktop.html",
+                "statusCode", String.valueOf(302),
+                "evaluateURI", "true"
+        ));
+
+        assertRedirect(adminAuthor, contentRoot + "/en/page.mobile.html", contentRoot + "/en/page.desktop.html", 302);
+        assertRedirect(adminAuthor, contentRoot + "/page1.mobile.html", contentRoot + "/page1.desktop.html", 302);
+    }
 }
